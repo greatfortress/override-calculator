@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lunenburg Override Projection</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">Lunenburg, MA property tax projection</p>
+          <h1>
+            See what a one-year override looks like after
+            <span id="hero-horizon">5 years</span> of Prop 2.5 growth.
+          </h1>
+          <p class="lede">
+            The town calculator shows the first-year increase only. This tool projects how that
+            added levy becomes part of the permanent tax base and then compounds annually.
+          </p>
+        </div>
+
+        <div class="hero-note card">
+          <p class="note-title">Projection rule</p>
+          <p class="note-text">
+            Under Massachusetts Proposition 2.5, an override permanently increases the levy limit,
+            and that higher base can then grow by 2.5% in future years.
+          </p>
+        </div>
+      </header>
+
+      <main class="dashboard">
+        <section class="controls card">
+          <div class="section-heading">
+            <h2>Inputs</h2>
+            <button id="example-button" class="ghost-button" type="button">
+              Load 119 Rolling example
+            </button>
+          </div>
+
+          <form id="projection-form" class="form-grid">
+            <label class="field">
+              <span>Property label</span>
+              <input
+                id="property-label"
+                name="propertyLabel"
+                type="text"
+                value="119 Rolling Acres Rd"
+              />
+            </label>
+
+            <label class="field">
+              <span>Current annual tax bill (optional)</span>
+              <input
+                id="current-tax"
+                name="currentTax"
+                type="number"
+                min="0"
+                step="0.01"
+                value="6898.57"
+                placeholder="Enter your current FY26 bill"
+              />
+            </label>
+
+            <label class="field">
+              <span>Assessed value</span>
+              <input
+                id="assessed-value"
+                name="assessedValue"
+                type="number"
+                min="0"
+                step="100"
+                value="479400"
+                placeholder="Used to estimate current bill"
+              />
+            </label>
+
+            <label class="field">
+              <span>Current tax rate per $1,000</span>
+              <input
+                id="current-rate"
+                name="currentRate"
+                type="number"
+                min="0"
+                step="0.01"
+                value="14.39"
+              />
+            </label>
+
+            <label class="field">
+              <span>Tier 1 tax rate per $1,000</span>
+              <input
+                id="tier1-rate"
+                name="tier1Rate"
+                type="number"
+                min="0"
+                step="0.01"
+                value="15.37"
+              />
+            </label>
+
+            <label class="field">
+              <span>Tier 2 tax rate per $1,000</span>
+              <input
+                id="tier2-rate"
+                name="tier2Rate"
+                type="number"
+                min="0"
+                step="0.01"
+                value="15.74"
+              />
+            </label>
+
+            <label class="field">
+              <span>Annual levy growth</span>
+              <div class="field-with-suffix">
+                <input
+                  id="growth-rate"
+                  name="growthRate"
+                  type="number"
+                  min="0"
+                  step="0.1"
+                  value="2.5"
+                />
+                <span>%</span>
+              </div>
+            </label>
+
+            <label class="field">
+              <span>Annual assessed value growth</span>
+              <div class="field-with-suffix">
+                <input
+                  id="assessed-growth-rate"
+                  name="assessedGrowthRate"
+                  type="number"
+                  min="0"
+                  step="0.1"
+                  value="0.0"
+                />
+                <span>%</span>
+              </div>
+            </label>
+
+            <label class="field">
+              <span>Conservative investment return</span>
+              <div class="field-with-suffix">
+                <input
+                  id="investment-return"
+                  name="investmentReturn"
+                  type="number"
+                  min="0"
+                  step="0.1"
+                  value="4.0"
+                />
+                <span>%</span>
+              </div>
+            </label>
+
+            <label class="field">
+              <span>Projection length</span>
+              <div class="field-with-suffix">
+                <input id="years" name="years" type="number" min="1" max="25" step="1" value="5" />
+                <span>years</span>
+              </div>
+            </label>
+
+            <label class="field">
+              <span>Start fiscal year</span>
+              <input id="start-year" name="startYear" type="number" min="2027" step="1" value="2027" />
+            </label>
+          </form>
+
+          <p id="input-hint" class="hint">
+            Dollar projections come from your assessed value and the three tax rates. If assessed
+            value is blank, the tool will estimate it from your current bill and current rate.
+          </p>
+        </section>
+
+        <section class="summary">
+          <article class="metric card accent-neutral">
+            <p class="metric-label">Starting bill at current rate</p>
+            <p id="metric-current-tax" class="metric-value">$0</p>
+            <p id="metric-current-tax-detail" class="metric-detail">
+              Based on your assessed value and current rate.
+            </p>
+          </article>
+
+          <article class="metric card accent-tier1">
+            <p id="metric-tier1-label" class="metric-label">Tier 1 extra over 5 years</p>
+            <p id="metric-tier1-total" class="metric-value">$0</p>
+            <p id="metric-tier1-detail" class="metric-detail">Cumulative additional taxes.</p>
+          </article>
+
+          <article class="metric card accent-tier2">
+            <p id="metric-tier2-label" class="metric-label">Tier 2 extra over 5 years</p>
+            <p id="metric-tier2-total" class="metric-value">$0</p>
+            <p id="metric-tier2-detail" class="metric-detail">Cumulative additional taxes.</p>
+          </article>
+
+          <article class="metric card accent-dark">
+            <p class="metric-label">Final-year extra burden</p>
+            <p id="metric-final-year" class="metric-value">$0 / $0</p>
+            <p id="metric-final-year-detail" class="metric-detail">Tier 1 and Tier 2 in the last projected year.</p>
+          </article>
+
+          <article class="metric card accent-tier1">
+            <p class="metric-label">Tier 1 if invested instead</p>
+            <p id="metric-tier1-invested" class="metric-value">$0</p>
+            <p id="metric-tier1-invested-detail" class="metric-detail">
+              Estimated ending value over the same period.
+            </p>
+          </article>
+
+          <article class="metric card accent-tier2">
+            <p class="metric-label">Tier 2 if invested instead</p>
+            <p id="metric-tier2-invested" class="metric-value">$0</p>
+            <p id="metric-tier2-invested-detail" class="metric-detail">
+              Estimated ending value over the same period.
+            </p>
+          </article>
+        </section>
+
+        <section class="visuals">
+          <article class="card chart-card">
+            <div class="section-heading">
+              <h2>Annual tax path</h2>
+              <p id="line-chart-caption" class="section-copy">
+                Shows the no-override baseline plus both override scenarios.
+              </p>
+            </div>
+            <div id="line-chart" class="chart" aria-label="Annual tax chart"></div>
+          </article>
+
+          <article class="card chart-card">
+            <div class="section-heading">
+              <h2>Override-only burden</h2>
+              <p class="section-copy">
+                This is the part the town calculator does not show over time.
+              </p>
+            </div>
+            <div id="bar-chart" class="chart" aria-label="Override burden chart"></div>
+          </article>
+        </section>
+
+        <section class="card table-card">
+          <div class="section-heading">
+            <h2>Year-by-year projection</h2>
+            <p id="table-caption" class="section-copy">
+              Baseline and override totals for each fiscal year.
+            </p>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Fiscal year</th>
+                  <th>No override</th>
+                  <th>Tier 1 extra</th>
+                  <th>Tier 1 total</th>
+                  <th>Tier 2 extra</th>
+                  <th>Tier 2 total</th>
+                </tr>
+              </thead>
+              <tbody id="results-body"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="card assumptions">
+          <div class="section-heading">
+            <h2>Assumptions</h2>
+          </div>
+          <ul class="assumption-list">
+            <li>
+              Tier 1 and Tier 2 start from the proposed tax rates you enter, rather than from a flat
+              dollar increase.
+            </li>
+            <li>
+              Each scenario starts with its own first-year tax rate, then grows by the annual levy
+              growth rate, defaulting to 2.5%.
+            </li>
+            <li>
+              If you enter assessed value growth, the model also increases your property's assessed
+              value each year, which raises all scenario taxes proportionally.
+            </li>
+            <li>
+              The investment comparison assumes each year’s added tax burden is invested at the end of
+              that year and compounds at the conservative return rate you choose.
+            </li>
+            <li>
+              This isolates override burden. Real tax bills may also change because of reassessment,
+              new growth, future overrides, and shifts in your share of town value.
+            </li>
+            <li>
+              If assessed value is blank, the tool backs into it from your current bill and current
+              rate so it can convert tax-rate scenarios into dollar amounts.
+            </li>
+          </ul>
+
+          <p class="sources">
+            Sources:
+            <a href="https://www.lunenburgma.gov/835/2026-Annual-Town-Meeting-FY27-Budget-Hub" target="_blank" rel="noreferrer">
+              Lunenburg FY27 Budget Hub
+            </a>
+            ,
+            <a href="https://www.mass.gov/info-details/proposition-2-12-and-tax-rate-process" target="_blank" rel="noreferrer">
+              Massachusetts Proposition 2.5 guidance
+            </a>
+            , and
+            <a href="https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView?field_tdr_date_value=2026&type=daily_treasury_yield_curve" target="_blank" rel="noreferrer">
+              U.S. Treasury daily yield curve rates
+            </a>
+          </p>
+        </section>
+      </main>
+    </div>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
