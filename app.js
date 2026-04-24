@@ -478,9 +478,9 @@ function render() {
 form.addEventListener("input", render);
 
 exampleButton.addEventListener("click", () => {
-  document.getElementById("property-label").value = "119 Rolling Acres Rd";
-  document.getElementById("current-tax").value = "6898.57";
-  document.getElementById("assessed-value").value = "479400";
+  document.getElementById("property-label").value = "855 Mass Ave";
+  document.getElementById("current-tax").value = "5567.49";
+  document.getElementById("assessed-value").value = "386900";
   document.getElementById("current-rate").value = "14.39";
   document.getElementById("tier1-rate").value = "15.37";
   document.getElementById("tier2-rate").value = "15.74";
